@@ -14,7 +14,7 @@ class ShowCards extends StatelessWidget {
             itemCount: card.length,
             itemBuilder: (BuildContext context, int index) {
               String tmp = "assets/images/";
-              tmp += (card[index]+".png");
+              tmp += (card[index] + ".png");
               return Container(
                 width: 175,
                 decoration: BoxDecoration(
