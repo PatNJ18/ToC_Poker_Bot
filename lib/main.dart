@@ -3,7 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:path/path.dart' as p;
 import 'package:flutter/material.dart';
 import 'package:poker_bot/ShowCards.dart';
-import 'package:poker_bot/backend.dart';
+import 'package:poker_bot/botPlay.dart';
 
 void main() async {
   runApp(MyApp());
@@ -47,22 +47,22 @@ class TextListWidget extends StatefulWidget {
 }
 
 class _TextListWidgetState extends State<TextListWidget> {
-  final StringArrayNotifier textNotifier = StringArrayNotifier([]);
+  final StringArrayNotifier communityCards = StringArrayNotifier([]);
 
   @override
   void initState() {
     super.initState();
-    textNotifier.value = TextNotifier().stringArray;
+    communityCards.updateValue(3);
     //textNotifier.updateValue(newValue);
   }
 
   @override
   Widget build(BuildContext context) {
     return ValueListenableBuilder<List<String>>(
-      valueListenable: textNotifier,
+      valueListenable: communityCards,
       builder: (context, stringArray, child) {
         return Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-          ShowCards(textNotifier.value)
+          ShowCards(communityCards.value)
         ] /* [
             for (var text in stringArray)
               Text(

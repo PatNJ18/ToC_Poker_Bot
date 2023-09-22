@@ -44,6 +44,7 @@ dependencies:
   faker: ^2.1.0
   randomstring_dart: ^0.0.4
   random_string_generator: ^2.0.0
+  poker: ^0.10.0
 
 dev_dependencies:
   flutter_test:

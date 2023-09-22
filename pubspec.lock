@@ -9,6 +9,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.11.0"
+  bitcount:
+    dependency: transitive
+    description:
+      name: bitcount
+      sha256: "7057dec46510c3491e0543a7dad2e17472904fcd4acc26cd999ce3e342576163"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.3.0"
   boolean_selector:
     dependency: transitive
     description:
@@ -179,6 +187,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.8.3"
+  poker:
+    dependency: "direct main"
+    description:
+      name: poker
+      sha256: "47be10d0230fc6f4b61b2b31e8f3973e3104a0fa6d79a5a1e1a9f70a36fd7bd4"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.10.0"
   provider:
     dependency: "direct main"
     description:
