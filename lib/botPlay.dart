@@ -2,8 +2,14 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:poker/poker.dart';
 
 class TextNotifier extends ChangeNotifier {}
+
+void main() {
+  var botTest = Botplay();
+  print(botTest.monteEvaluate('S5', 'S5', 'S5'));
+}
 
 class Deck {
   List<String> deck = [
@@ -76,6 +82,15 @@ class StringArrayNotifier extends ValueNotifier<List<String>> {
     }
     notifyListeners();
   }
+
+  List<String> drawNcard(int num) {
+    List<String> hand = [];
+
+    for (int i = 0; i < num; i++) {
+      hand.add(cards.drawCard());
+    }
+    return hand;
+  }
 }
 
 class Botplay {
@@ -109,6 +124,34 @@ class Botplay {
         }
       }
     }
+  }
+
+  // ignore: non_constant_identifier_names
+  double monteEvaluate(String Bothand, String playerHand, String CommuCards) {
+    final evaluator = MontecarloEvaluator(
+        communityCards: ImmutableCardSet.parse(CommuCards),
+        players: [
+          HandRange.parse(Bothand),
+          HandRange.parse(playerHand),
+        ]);
+
+    var wons = [0, 0];
+
+    for (final matchup in evaluator.take(100000)) {
+      for (final i in matchup.wonPlayerIndexes) {
+        wons[i] += 1;
+      }
+    }
+
+    return wons[0] / 100000;
+  }
+
+  String cardPpare(List<String> hand) {
+    String temp = '';
+    for (int i = 0; i < hand.length; i++) {
+      temp += hand[i][1] + hand[i][0].toLowerCase();
+    }
+    return temp;
   }
 }
 
