@@ -11,6 +11,20 @@ class TextNotifier extends ChangeNotifier {
   ];
 }
 
+                                                                    class BotHand extends ChangeNotifier {
+                                                                      List<String> stringArray = [
+                                                                        "BB",
+                                                                        "BB",
+                                                                      ];
+                                                                    }
+
+                                                                    class PlayerHand extends ChangeNotifier {
+                                                                      List<String> stringArray = [
+                                                                        "D10",
+                                                                        "S8",
+                                                                      ];
+                                                                    }
+
 class StringArrayNotifier extends ValueNotifier<List<String>> {
   StringArrayNotifier(List<String> value) : super(value);
 

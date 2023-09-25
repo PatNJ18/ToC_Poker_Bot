@@ -9,6 +9,10 @@ class ShowCards extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
         height: 243,
+                                                        width: 175 * card.length.toDouble(),
+                                                        constraints: BoxConstraints(
+                                                          maxWidth: MediaQuery.of(context).size.width * 1,
+                                                        ),
         child: ListView.builder(
             scrollDirection: Axis.horizontal,
             itemCount: card.length,
@@ -18,8 +22,8 @@ class ShowCards extends StatelessWidget {
               return Container(
                 width: 175,
                 decoration: BoxDecoration(
-                  border: Border.all(width: 0.5),
-                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(width: 1),
+                  borderRadius: BorderRadius.circular(5),
                 ),
                 child: Image.asset(
                   tmp,
