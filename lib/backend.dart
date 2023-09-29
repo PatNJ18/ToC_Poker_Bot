@@ -8,13 +8,14 @@ class TextNotifier extends ChangeNotifier {
     "D2",
     "HA",
     "S4",
+    "D3"
   ];
 }
 
                                                                     class BotHand extends ChangeNotifier {
                                                                       List<String> stringArray = [
-                                                                        "BB",
-                                                                        "BB",
+    "S4",
+    "SA",
                                                                       ];
                                                                     }
 
