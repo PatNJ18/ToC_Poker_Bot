@@ -95,32 +95,47 @@ class StringArrayNotifier extends ValueNotifier<List<String>> {
 
 class Botplay {
   var currentState = 'Start';
+  var previousState = 'Start';
   var states = States();
   var threshold = 1.0 / 3;
   bool wait = false;
+  var round = 0;
 
   void changeState(double prob, int bPlay) {
     int i = 1;
-    var path = states.list_states[currentState]?.length;
-    print(currentState);
+    bool out = false;
 
-    if (currentState == 'A Calls' || currentState == 'A Raises') {
-      currentState = states.list_states[currentState]![bPlay];
+    if (currentState == 'Start' && wait) {
+      previousState = currentState;
+      currentState = states.ListStates[currentState]![bPlay];
     }
 
-    while (i <= path! && !wait) {
+    if (currentState == 'Advance' && round == 3) {
+      // TODO : Decision winner Function Call
+    }
+
+    while (!out & !wait) {
       if (threshold * i < prob) {
         i++;
-        print(i);
       } else {
-        if (states.list_states[currentState]?[i - 1] != null && !(wait)) {
-          currentState = states.list_states[currentState]![i - 1];
-          if (currentState == 'A Calls' || currentState == 'A Raises') {
+        out = true;
+        if (states.ListStates[currentState]?[i - 1] != null && !(wait)) {
+          previousState = currentState;
+          currentState = states.ListStates[currentState]![i - 1];
+
+          if (currentState == 'A Raise' || currentState == 'Start') {
             wait = true;
           } else {
             wait = false;
           }
-          threshold = 1.0 / states.list_states[currentState]!.length;
+
+          if (currentState == 'Advance') {
+            round++;
+
+            // TODO : Gameplay Select Round 1 : Open 3 community Card Round 2 : Draw Card Round 3 : Draw Card an finish game
+          }
+
+          threshold = 1.0 / states.ListStates[currentState]!.length;
         }
       }
     }
@@ -156,17 +171,16 @@ class Botplay {
 }
 
 class States {
-  var list_states = {
-    'Start': ['A Folds', 'A Calls', 'A Raises'],
-    'A Folds': ['Endhand'],
-    'A Calls': ['B Checks', 'B Raises', 'B Folds'],
-    'A Raises': ['B Folds', 'B Calls'],
-    'B Checks': ['Advance'],
-    'B Raises': ['2 A Folds', '2 A Calls', 'A Raises'],
-    'B Folds': ['Endhand'],
-    '2 A Folds': ['A Folds'],
-    '2 A Calls': ['Advance'],
-    'Endhand': ['None'],
-    'Advance': ['None']
+  var ListStates = {
+    'Start': ['B Fold', 'B Bet', 'B Check'],
+    'B Fold': ['A Win'],
+    'B Bet': ['A Fold', 'A Call', 'A Raise'],
+    'B Check': ['A Fold', 'A Raise', 'A Check'],
+    'B Call': ['Advance'],
+    'A Fold': ['B Win'],
+    'A Call': ['Advance'],
+    'A Check': ['Advance'],
+    'A Raise': ['B Fold', 'B Call'],
+    'Advance': ['Start', 'A Win', 'B Win']
   };
 }
