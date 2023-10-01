@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
+import 'package:logger/logger.dart';
 import 'package:path/path.dart' as p;
 import 'package:flutter/material.dart';
-import 'package:poker_bot/backend.dart';
+import 'botPlay.dart';
 import 'package:flutter_flip_card/flutter_flip_card.dart';
 
 double cardHeight = 190.0;
@@ -13,31 +14,12 @@ void main() async {
   runApp(MyApp());
 }
 
-/* class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
-      ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
-    );
-  }
-} */
-
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       home: Scaffold(
-        // appBar: AppBar(
-        //   title: const Text('Text Notifier Example'),
-        // ),
         body: Center(
           child: TextListWidget(),
         ),
@@ -52,9 +34,12 @@ class TextListWidget extends StatefulWidget {
 }
 
 class _TextListWidgetState extends State<TextListWidget> {
-  final StringArrayNotifier textNotifier = StringArrayNotifier([]);
-  final StringArrayNotifier botHand = StringArrayNotifier([]);
-  final StringArrayNotifier playerHand = StringArrayNotifier([]);
+  final StringArrayNotifier centralDeck = StringArrayNotifier([]);
+  List<String> communityCards = [];
+  List<String> Bothand = [];
+  List<String> playerHand = [];
+  final botA = Botplay();
+  late double probA;
 
   int count = 0;
   List<FlipCardController> listController = [
@@ -70,34 +55,10 @@ class _TextListWidgetState extends State<TextListWidget> {
   @override
   void initState() {
     super.initState();
-    communityCards = central_deck.drawNcard(3);
-    Bothand = central_deck.drawNcard(2);
-    playerHand = central_deck.drawNcard(2);
-    //communityCards.updateValue(3);
-    //textNotifier.updateValue(newValue);
+    communityCards = centralDeck.drawNcard(5);
+    Bothand = centralDeck.drawNcard(2);
+    playerHand = centralDeck.drawNcard(2);
   }
-
-  // @override
-  // Widget build(BuildContext context) {
-  //   return ValueListenableBuilder<List<String>>(
-  //     valueListenable: textNotifier,
-  //     builder: (context, stringArray, child) {
-  //       return Column(
-  //         mainAxisAlignment: MainAxisAlignment.center,
-  //         children:[
-  //         ShowCards(textNotifier.value),
-  //         Text("Hello"),
-  //         ] /* [
-  //           for (var text in stringArray)
-  //             Text(
-  //               text,
-  //               style: TextStyle(fontSize: 24),
-  //             ),
-  //         ], */
-  //       );
-  //     },
-  //   );
-  // }
 
   @override
   Widget build(BuildContext context) {
@@ -105,9 +66,11 @@ class _TextListWidgetState extends State<TextListWidget> {
     var tempBotH = botA.cardPpare(Bothand);
     var tempPlayH = botA.cardPpare(playerHand);
     probA = botA.monteEvaluate(tempBotH, tempPlayH, tempCommuCards);
+    var stateText = botA.currentState;
+    var logger = Logger();
 
     return ValueListenableBuilder<List<String>>(
-      valueListenable: central_deck,
+      valueListenable: centralDeck,
       builder: (context, stringArray, child) {
         return Container(
           color: Colors.green[900],
@@ -137,7 +100,7 @@ class _TextListWidgetState extends State<TextListWidget> {
                     height: cardHeight,
                     width: cardWidth,
                     child: Image.asset(
-                      ("assets/images/${botHand.value[0]}.png"),
+                      ("assets/images/${Bothand[0]}.png"),
                       fit: BoxFit.contain,
                     ),
                   ),
@@ -165,7 +128,7 @@ class _TextListWidgetState extends State<TextListWidget> {
                     height: cardHeight,
                     width: cardWidth,
                     child: Image.asset(
-                      ("assets/images/${botHand.value[1]}.png"),
+                      ("assets/images/${Bothand[1]}.png"),
                       fit: BoxFit.contain,
                     ),
                   ),
@@ -191,7 +154,7 @@ class _TextListWidgetState extends State<TextListWidget> {
                   height: cardHeight,
                   width: cardWidth,
                   child: Image.asset(
-                    ("assets/images/${playerHand.value[0]}.png"),
+                    ("assets/images/${playerHand[0]}.png"),
                     fit: BoxFit.contain,
                   ),
                 ),
@@ -203,7 +166,7 @@ class _TextListWidgetState extends State<TextListWidget> {
                   height: cardHeight,
                   width: cardWidth,
                   child: Image.asset(
-                    ("assets/images/${playerHand.value[1]}.png"),
+                    ("assets/images/${playerHand[1]}.png"),
                     fit: BoxFit.contain,
                   ),
                 ),
@@ -213,34 +176,113 @@ class _TextListWidgetState extends State<TextListWidget> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 TextButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      // We play
+                      botA.changeState(probA, 1);
+
+                      if (botA.currentState == 'A Win' ||
+                          botA.currentState == 'B Win' ||
+                          botA.currentState == 'Draw') {
+                        listController[5].flipcard();
+                        listController[6].flipcard();
+                      }
+
+                      if (botA.round == 1 && botA.currentState == 'Advance') {
+                        listController[0].flipcard();
+                        listController[1].flipcard();
+                        listController[2].flipcard();
+                      } else if (botA.round == 2 &&
+                          botA.currentState == 'Advance') {
+                        listController[3].flipcard();
+                      } else if (botA.round == 3 &&
+                          botA.currentState == 'Advance') {
+                        listController[4].flipcard();
+                      }
+
+                      setState(() {
+                        stateText = botA.currentState;
+                      });
+                    },
                     child: Text(
-                      "Call",
+                      "Call or Check",
                       style: textTheme,
                     )),
                 TextButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      // We play
+                      botA.changeState(probA, 0);
+
+                      if (botA.currentState == 'A Win' ||
+                          botA.currentState == 'B Win' ||
+                          botA.currentState == 'Draw') {
+                        listController[5].flipcard();
+                        listController[6].flipcard();
+                      }
+
+                      if (botA.round == 1 && botA.currentState == 'Advance') {
+                        listController[0].flipcard();
+                        listController[1].flipcard();
+                        listController[2].flipcard();
+                      } else if (botA.round == 2 &&
+                          botA.currentState == 'Advance') {
+                        listController[3].flipcard();
+                      } else if (botA.round == 3 &&
+                          botA.currentState == 'Advance') {
+                        listController[4].flipcard();
+                      }
+
+                      setState(() {
+                        stateText = botA.currentState;
+                      });
+                    },
                     child: Text(
                       "Fold",
                       style: textTheme,
                     )),
                 TextButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      // We play
+                      botA.changeState(probA, 2);
+
+                      if (botA.currentState == 'A Win' ||
+                          botA.currentState == 'B Win' ||
+                          botA.currentState == 'Draw') {
+                        listController[5].flipcard();
+                        listController[6].flipcard();
+                      }
+
+                      if (botA.round == 1 && botA.currentState == 'Advance') {
+                        listController[0].flipcard();
+                        listController[1].flipcard();
+                        listController[2].flipcard();
+                      } else if (botA.round == 2 &&
+                          botA.currentState == 'Advance') {
+                        listController[3].flipcard();
+                      } else if (botA.round == 3 &&
+                          botA.currentState == 'Advance') {
+                        listController[4].flipcard();
+                      }
+
+                      setState(() {
+                        stateText = botA.currentState;
+                      });
+                    },
                     child: Text(
                       "Bet",
                       style: textTheme,
                     )),
-                FloatingActionButton(onPressed: () {
-                  count++;
-                  if (count == 1) {
-                    listController[0].flipcard();
-                    listController[1].flipcard();
-                    listController[2].flipcard();
-                    count = 2;
-                  } else {
-                    listController[count].flipcard();
-                  }
-                })
+                RichText(
+                  text: TextSpan(
+                    text: stateText,
+                    style: TextStyle(
+                      fontSize: 40,
+                      color: Colors.amberAccent[300],
+                      background: Paint()
+                        ..style = PaintingStyle.fill
+                        ..color = Colors.blue[700]!,
+                    ),
+                  ),
+                )
               ],
             ),
           ]),
@@ -274,7 +316,7 @@ class _TextListWidgetState extends State<TextListWidget> {
             height: cardHeight,
             width: cardWidth,
             child: Image.asset(
-              ("assets/images/${textNotifier.value[0]}.png"),
+              ("assets/images/${communityCards[0]}.png"),
               fit: BoxFit.contain,
             ),
           ),
@@ -302,7 +344,7 @@ class _TextListWidgetState extends State<TextListWidget> {
             height: cardHeight,
             width: cardWidth,
             child: Image.asset(
-              ("assets/images/${textNotifier.value[1]}.png"),
+              ("assets/images/${communityCards[1]}.png"),
               fit: BoxFit.contain,
             ),
           ),
@@ -330,7 +372,7 @@ class _TextListWidgetState extends State<TextListWidget> {
             height: cardHeight,
             width: cardWidth,
             child: Image.asset(
-              ("assets/images/${textNotifier.value[2]}.png"),
+              ("assets/images/${communityCards[2]}.png"),
               fit: BoxFit.contain,
             ),
           ),
@@ -358,7 +400,7 @@ class _TextListWidgetState extends State<TextListWidget> {
             height: cardHeight,
             width: cardWidth,
             child: Image.asset(
-              ("assets/images/${textNotifier.value[3]}.png"),
+              ("assets/images/${communityCards[3]}.png"),
               fit: BoxFit.contain,
             ),
           ),
@@ -386,7 +428,7 @@ class _TextListWidgetState extends State<TextListWidget> {
             height: cardHeight,
             width: cardWidth,
             child: Image.asset(
-              ("assets/images/${textNotifier.value[4]}.png"),
+              ("assets/images/${communityCards[4]}.png"),
               fit: BoxFit.contain,
             ),
           ),

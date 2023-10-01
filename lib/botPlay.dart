@@ -2,7 +2,9 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:logger/logger.dart';
 import 'package:poker/poker.dart';
+import 'package:poker_bot/checkCard.dart';
 
 class TextNotifier extends ChangeNotifier {}
 
@@ -94,48 +96,79 @@ class StringArrayNotifier extends ValueNotifier<List<String>> {
 }
 
 class Botplay {
-  var currentState = 'Start';
+  var _currentState = 'Start';
+  String get currentState => _currentState;
   var previousState = 'Start';
   var states = States();
   var threshold = 1.0 / 3;
-  bool wait = false;
+  bool wait = true;
   var round = 0;
+  var tempCommuCards = '';
+  var tempBotH = '';
+  var tempPlayH = '';
+  final logger = Logger();
+
+  static Map<int, String> winHand = {
+    1: 'Royal Flush',
+    2: 'Straight Flush',
+    3: 'Four of a Kind',
+    4: 'Full House',
+    5: 'Flush',
+    6: 'Straight',
+    7: 'Three of a Kind',
+    8: 'Two Pair',
+    9: 'One Pair',
+    10: 'High Card',
+  };
 
   void changeState(double prob, int bPlay) {
     int i = 1;
     bool out = false;
 
-    if (currentState == 'Start' && wait) {
-      previousState = currentState;
-      currentState = states.ListStates[currentState]![bPlay];
+    if ((_currentState == 'Start' || _currentState == 'A Raise') && wait) {
+      previousState = _currentState;
+      _currentState = states.listStates[_currentState]![bPlay];
+      wait = false;
     }
 
-    if (currentState == 'Advance' && round == 3) {
-      // TODO : Decision winner Function Call
+    if (_currentState == 'Advance' && round == 3) {
+      String winner = checkWin();
+
+      if (winner == 'A Win') {
+        _currentState = 'A Win';
+        return;
+      }
+
+      if (winner == 'B Win') {
+        _currentState = 'B Win';
+        return;
+      }
+
+      _currentState = 'Draw';
+      out = true;
     }
 
     while (!out & !wait) {
-      if (threshold * i < prob) {
+      if (threshold * i < prob &&
+          i < states.listStates[_currentState]!.length) {
         i++;
       } else {
         out = true;
-        if (states.ListStates[currentState]?[i - 1] != null && !(wait)) {
-          previousState = currentState;
-          currentState = states.ListStates[currentState]![i - 1];
+        if (states.listStates[_currentState]?[i - 1] != null && !(wait)) {
+          previousState = _currentState;
+          _currentState = states.listStates[_currentState]![i - 1];
 
-          if (currentState == 'A Raise' || currentState == 'Start') {
+          if (_currentState == 'A Raise' || _currentState == 'Start') {
             wait = true;
           } else {
             wait = false;
           }
 
-          if (currentState == 'Advance') {
+          if (_currentState == 'Advance') {
             round++;
-
-            // TODO : Gameplay Select Round 1 : Open 3 community Card Round 2 : Draw Card Round 3 : Draw Card an finish game
           }
 
-          threshold = 1.0 / states.ListStates[currentState]!.length;
+          threshold = 1.0 / states.listStates[_currentState]!.length;
         }
       }
     }
@@ -143,6 +176,11 @@ class Botplay {
 
   // ignore: non_constant_identifier_names
   double monteEvaluate(String Bothand, String playerHand, String CommuCards) {
+    if (tempBotH == '' && tempCommuCards == '' && tempPlayH == '') {
+      tempBotH = Bothand;
+      tempCommuCards = CommuCards;
+      tempPlayH = playerHand;
+    }
     final evaluator = MontecarloEvaluator(
         communityCards: ImmutableCardSet.parse(CommuCards),
         players: [
@@ -168,10 +206,40 @@ class Botplay {
     }
     return temp;
   }
+
+  String checkWin() {
+    logger.d('Bothand : $tempBotH');
+    logger.d('Community : $tempCommuCards');
+    logger.d('Playhand : $tempPlayH');
+    final evaluator = ExhaustiveEvaluator(
+      communityCards: ImmutableCardSet.parse(tempCommuCards),
+      players: [
+        HandRange.parse(tempBotH),
+        HandRange.parse(tempPlayH),
+      ],
+    );
+
+    var wons = [0, 0];
+
+    for (final matchup in evaluator) {
+      for (final i in matchup.wonPlayerIndexes) {
+        wons[i] += 1;
+      }
+    }
+
+    logger.d('win array: $wons');
+    if (wons[0] > wons[1]) {
+      return 'A Win';
+    } else if (wons[1] > wons[0]) {
+      return 'B Win';
+    } else {
+      return 'Draw';
+    }
+  }
 }
 
 class States {
-  var ListStates = {
+  var listStates = {
     'Start': ['B Fold', 'B Bet', 'B Check'],
     'B Fold': ['A Win'],
     'B Bet': ['A Fold', 'A Call', 'A Raise'],
@@ -181,6 +249,9 @@ class States {
     'A Call': ['Advance'],
     'A Check': ['Advance'],
     'A Raise': ['B Fold', 'B Call'],
-    'Advance': ['Start', 'A Win', 'B Win']
+    'Advance': ['Start'],
+    'B Win': ['B Win'],
+    'A Win': ['A Win'],
+    'Draw': ['Draw']
   };
 }
