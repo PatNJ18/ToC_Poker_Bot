@@ -1,18 +1,42 @@
-# ToC_Poker_Bot
+</p>
+<h1 align="center">Poker Game</h1>
+<p align="center">
+A web poker game vs bot.
+</p>
+</p>
 
-# poker_bot
+# Key Features
 
-A new Flutter project.
+- A full-featured game running in your browser.
 
-## Getting Started
+- An original Poker game with DFA mechanisms.
 
-This project is a starting point for a Flutter application.
+- An Intelligent bot that can calculate possibility of winning with Monte Carlo Simulation.
 
-A few resources to get you started if this is your first Flutter project:
+# Documents
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+Documents of this project are [here](https://www.youtube.com/watch?v=15QZl3VozSY) 
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+# How to play
+
+You can play via this link [Poker Game](https://pkbo-cc69d.web.app/?fbclid=IwAR175uAqn856rRzy-x-vKSR31s_TI1_Rw6fgC7y01UGMeoIgYUWX4uVTmgM). You will play as B. Recommend to play in Chrome.
+
+- Blue button is current state of match.
+
+- At start of the game you can choose to `Call/Check` or `Fold` or `Bet`.
+
+- If choose `Fold`, Bot will win and end the game `(A Win)` .
+
+- If choose `Bet` or `Call/Check`, Bot will decide its next move.
+
+- If Bot choose to `Fold`, You will win and end the game `(B Win)`.
+
+- If Bot choose another, The game will resume its state.
+
+- When reach the state `Advance` you can press any button to resume the match.You will get send back to `Start` state. (This will not affect the match)
+
+- If the game is over and you want to replay, simply press reload button on your browser.
+
+# Group Members
+
+- joe
