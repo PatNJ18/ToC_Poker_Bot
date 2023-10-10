@@ -15,7 +15,7 @@ A web poker game vs bot.
 
 # Documents
 
-Documents of this project are [here](https://www.youtube.com/watch?v=15QZl3VozSY) 
+Documents of this project are [here](pokerdoc.pdf) 
 
 # How to play
 
