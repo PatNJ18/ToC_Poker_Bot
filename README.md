@@ -39,6 +39,8 @@ You can play via this link [Poker Game](https://pokertoc-ad914.web.app/). You wi
 
 # Group Members
 
+- 63010720 Pakanon Jaroenras
+
 - 64010019 Krisakorn Boonpan
 
 - 64010051 Kitti Chumchuen
