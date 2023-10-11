@@ -19,7 +19,7 @@ Documents of this project are [here](pokerdoc.pdf)
 
 # How to play
 
-You can play via this link [Poker Game](https://pkbo-cc69d.web.app/?fbclid=IwAR175uAqn856rRzy-x-vKSR31s_TI1_Rw6fgC7y01UGMeoIgYUWX4uVTmgM). You will play as B. Recommend to play in Chrome.
+You can play via this link [Poker Game](https://pokertoc-ad914.web.app/). You will play as B. Recommend to play in Chrome.
 
 - Blue button is current state of match.
 
@@ -39,4 +39,20 @@ You can play via this link [Poker Game](https://pkbo-cc69d.web.app/?fbclid=IwAR1
 
 # Group Members
 
-- joe
+- 64010019 Krisakorn Boonpan
+
+- 64010051 Kitti Chumchuen
+
+- 64010203 Natapol Tirakhan
+
+- 64010251 Nuttapat Ngammuk
+
+- 64010270 Donlapat Ponoi
+
+- 64010272 Daniel Riyavong
+
+- 64010323 Tanapan Panpak
+
+- 64010389 Theerapat Yeetho
+
+- 64010400 Nonthaphat Jitchiranant
